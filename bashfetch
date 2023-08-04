@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+## A pure-bash information fetching tool.
+## Created by Phate6660.
+
+## Information Gathering
+# Distro
+distro_file="$(< /etc/os-release)"
+for line in ${distro_file}; do
+    if [[ "${line}" =~ .*PRETTY_NAME.* ]]; then
+        pretty_name_line="${line}"
+    fi
+done
+IFS="\"" read -ra name <<< "${pretty_name_line}"
+DISTRO="${name[1]}"
+
+# Hostname
+HOSTNAME="$(< /etc/hostname)"
+
+# Kernel
+LINUX="$(< /proc/sys/kernel/osrelease)"
+
+# Uptime
+uptime_file="$(< /proc/uptime)"
+IFS=" " read -ra rare_time <<< "${uptime_file}"
+IFS="." read -ra medium_rare_time <<< "${rare_time[0]}"
+medium_time="${medium_rare_time[0]}"
+if [[ "${medium_time}" -gt 86400 ]]; then 
+    days=$((medium_time / 60 / 60 / 24))
+else
+    days=0
+fi
+if [[ "${medium_time}" -gt 3600 ]]; then
+    hours_pre=$((medium_time / 60 / 60))
+    hours=$((hours_pre % 24))
+else
+    hours=0
+fi
+if [[ "${medium_time}" -gt 60 ]]; then
+    minutes_pre=$((medium_time / 60))
+    minutes=$((minutes_pre % 60))
+else
+    minutes=0
+fi
+UPTIME="${days}d ${hours}h ${minutes}m"
+
+# Output the information.
+#
+# Example output:
+# ---------------
+# DISTRO:   EndeavourOS
+# HOSTNAME: TUF-Gaming
+# KERNEL:   6.4.7-arch1-3
+# UPTIME:   0d 20h 4m
+#
+# The line 3 below this one disables a couple of false warnings about quoting.
+# It is due to the backslash I added after the first 3 quotes in order to get
+# even formatting for the output without a newline at the start.
+# shellcheck disable=SC1078,SC1079
+printf """\
+DISTRO:   %s
+HOSTNAME: %s
+KERNEL:   %s
+UPTIME:   %s
+""" "${DISTRO}" "${HOSTNAME}" "${LINUX}" "${UPTIME}"
