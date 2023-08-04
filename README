@@ -1,0 +1,62 @@
+This is a pure-bash informmation fetching script.
+
+Currently, the output is as follows on my machine:
+DISTRO:   EndeavourOS
+HOSTNAME: TUF-Gaming
+KERNEL:   6.4.7-arch1-3
+UPTIME:   0d 20h 4m
+
+TODO:
+- Better parsing of /etc/os-release for obtaining the distro
+  as well as falling back to... I believe 3 other possible files
+  if my memory serves me correctly in case /etc/os-release simply
+  doesn't exist (there are a few distros which get rid of it)
+- Gather more methods of obtaining the hostname, as PLENTY of distros
+  no longer use /etc/hostname
+- Obtain the package counts on the system of various package managers:
+  + apk (alpine)
+  + apt/dpkg/pkg (ubuntu/debian-based, termux)
+  + dnf/zypper/rpm (fedora/openSUSE-based)
+  + flatpak (standalone)
+  + pacman (arch-based)
+  + portage (gentoo)
+  + snap (standalone)
+  + xbps (void)
+- RAM used/total/free
+- CPU 
+  + model
+  + specs:
+    * cores/threads
+    * speeds
+  + temperatures
+- GPU
+  + brand/model
+  + specs
+    * memory type
+    * amount of VRAM
+  * temerature
+- Storage devices:
+  + paths
+  + mounted?
+  + specs:
+    * used
+    * free
+    * total
+- IP Address:
+  + Local
+  + Public
+  + VPN?
+- Kernel:
+  + modules?
+  + tainted?
+  + locally built?
+- Music info:
+  + state
+    * play/pause
+    * time elapsed/total
+  + info
+    * artist
+    * album
+    * title
+    * genre
+  + player
