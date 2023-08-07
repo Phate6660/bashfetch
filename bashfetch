@@ -10,12 +10,24 @@ IFS=$'\n'
 for line in ${cpu_file}; do
     if [[ "${line}" =~ .*model\ name.* ]]; then
         pretty_name_line="${line}"
-        break # No need to continue once we find the first match.
+    fi
+    if [[ "${line}" =~ .*siblings.* ]]; then
+        threads_line="${line}"
+    fi
+    if [[ "${line}" =~ .*cpu\ cores.* ]]; then
+        cores_line="${line}"
+    fi
+    if [ -n "${pretty_name_line}" ] && [ -n "${threads_line}" ] && [ -n "${cores_line}" ]; then
+        break
     fi
 done
 unset IFS
-IFS=":" read -ra name <<< "${pretty_name_line}"
-CPU="${name[1]:1}"
+IFS=":" read -ra model_name <<< "${pretty_name_line}"
+IFS=":" read -ra cores <<< "${cores_line}"
+IFS=":" read -ra threads <<< "${threads_line}"
+CPU="${model_name[1]:1}"
+CORES="${cores[1]:1}"
+THREADS="${threads[1]:1}"
 
 # Distro
 distro_file="$(< /etc/os-release)"
@@ -67,6 +79,7 @@ UPTIME="${days}d ${hours}h ${minutes}m"
 #
 # Example output:
 # ---------------
+# CPU:      AMD Ryzen 5 3550H with Radeon Vega Mobile Gfx [4 cores, 8 threads]
 # DISTRO:   EndeavourOS
 # HOSTNAME: TUF-Gaming
 # KERNEL:   6.4.7-arch1-3
@@ -77,9 +90,9 @@ UPTIME="${days}d ${hours}h ${minutes}m"
 # even formatting for the output without a newline at the start.
 # shellcheck disable=SC1078,SC1079
 printf """\
-CPU:      %s
+CPU:      %s [%d cores, %d threads]
 DISTRO:   %s
 HOSTNAME: %s
 KERNEL:   %s
 UPTIME:   %s
-""" "${CPU}" "${DISTRO}" "${HOSTNAME}" "${LINUX}" "${UPTIME}"
+""" "${CPU}" "${CORES}" "${THREADS}" "${DISTRO}" "${HOSTNAME}" "${LINUX}" "${UPTIME}"

@@ -1,7 +1,7 @@
 This is a pure-bash informmation fetching script.
 
 Currently, the output is as follows on my machine:
-CPU:      AMD Ryzen 5 3550H with Radeon Vega Mobile Gfx
+CPU:      AMD Ryzen 5 3550H with Radeon Vega Mobile Gfx [4 cores, 8 threads]
 DISTRO:   EndeavourOS
 HOSTNAME: TUF-Gaming
 KERNEL:   6.4.7-arch1-3
@@ -27,7 +27,7 @@ TODO:
 - CPU 
   + [DONE] model
   + specs:
-    * cores/threads
+    * [DONE] cores/threads
     * speeds
   + temperatures
 - GPU
