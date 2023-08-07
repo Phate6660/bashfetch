@@ -1,6 +1,7 @@
 This is a pure-bash informmation fetching script.
 
 Currently, the output is as follows on my machine:
+CPU:      AMD Ryzen 5 3550H with Radeon Vega Mobile Gfx
 DISTRO:   EndeavourOS
 HOSTNAME: TUF-Gaming
 KERNEL:   6.4.7-arch1-3
@@ -11,8 +12,8 @@ TODO:
   as well as falling back to... I believe 3 other possible files
   if my memory serves me correctly in case /etc/os-release simply
   doesn't exist (there are a few distros which get rid of it)
-- Gather more methods of obtaining the hostname, as PLENTY of distros
-  no longer use /etc/hostname
+- [DONE] Gather more methods of obtaining the hostname, as PLENTY of
+  distros no longer use /etc/hostname
 - Obtain the package counts on the system of various package managers:
   + apk (alpine)
   + apt/dpkg/pkg (ubuntu/debian-based, termux)
@@ -24,7 +25,7 @@ TODO:
   + xbps (void)
 - RAM used/total/free
 - CPU 
-  + model
+  + [DONE] model
   + specs:
     * cores/threads
     * speeds

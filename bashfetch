@@ -4,6 +4,19 @@
 ## Created by Phate6660.
 
 ## Information Gathering
+# CPU
+cpu_file="$(< /proc/cpuinfo)"
+IFS=$'\n'
+for line in ${cpu_file}; do
+    if [[ "${line}" =~ .*model\ name.* ]]; then
+        pretty_name_line="${line}"
+        break # No need to continue once we find the first match.
+    fi
+done
+unset IFS
+IFS=":" read -ra name <<< "${pretty_name_line}"
+CPU="${name[1]:1}"
+
 # Distro
 distro_file="$(< /etc/os-release)"
 for line in ${distro_file}; do
@@ -15,7 +28,13 @@ IFS="\"" read -ra name <<< "${pretty_name_line}"
 DISTRO="${name[1]}"
 
 # Hostname
-HOSTNAME="$(< /etc/hostname)"
+# /etc/hostname is the standard file for finding the hostname.
+# In cases it's not available, use the file that the kernel provides.
+if [ -f "/etc/hostname" ]; then
+    HOSTNAME="$(< /etc/hostname)"
+elif [ -f "/proc/sys/kernel/hostname" ]; then
+    HOSTNAME="$(< /proc/sys/kernel/hostname)"
+fi
 
 # Kernel
 LINUX="$(< /proc/sys/kernel/osrelease)"
@@ -58,8 +77,9 @@ UPTIME="${days}d ${hours}h ${minutes}m"
 # even formatting for the output without a newline at the start.
 # shellcheck disable=SC1078,SC1079
 printf """\
+CPU:      %s
 DISTRO:   %s
 HOSTNAME: %s
 KERNEL:   %s
 UPTIME:   %s
-""" "${DISTRO}" "${HOSTNAME}" "${LINUX}" "${UPTIME}"
+""" "${CPU}" "${DISTRO}" "${HOSTNAME}" "${LINUX}" "${UPTIME}"
