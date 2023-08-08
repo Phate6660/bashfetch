@@ -13,14 +13,17 @@ for line in ${cpu_file}; do
         *"siblings"*)   threads_line="${line}";;
         *"cpu cores"*)  cores_line="${line}";;
     esac
-    if [ -n "${pretty_name_line}" ] && [ -n "${threads_line}" ] && [ -n "${cores_line}" ]; then
+    if  [ -n "${pretty_name_line}" ] &&
+        [ -n "${threads_line}" ]     &&
+        [ -n "${cores_line}" ]; then
         break # We no longer need to iterate through the file.
     fi
 done
-unset IFS
+unset IFS # We no longer need to delimit by newline.
 IFS=":" read -ra model_name <<< "${pretty_name_line}"
 IFS=":" read -ra cores      <<< "${cores_line}"
 IFS=":" read -ra threads    <<< "${threads_line}"
+# ':1' removes the first character of the string.
 CPU="${model_name[1]:1}"
 CORES="${cores[1]:1}"
 THREADS="${threads[1]:1}"
@@ -28,8 +31,9 @@ THREADS="${threads[1]:1}"
 # Distro
 distro_file="$(< /etc/os-release)"
 for line in ${distro_file}; do
-    if [[ "${line}" =~ .*PRETTY_NAME.* ]]; then
+    if [[ "${line}" == PRETTY_NAME* ]]; then
         pretty_name_line="${line}"
+        break
     fi
 done
 IFS="\"" read -ra name <<< "${pretty_name_line}"
@@ -52,6 +56,7 @@ uptime_file="$(< /proc/uptime)"
 IFS=" " read -ra rare_time        <<< "${uptime_file}"
 IFS="." read -ra medium_rare_time <<< "${rare_time[0]}"
 medium_time="${medium_rare_time[0]}"
+# TODO: Find a better way to compact this section.
 if [[ "${medium_time}" -gt 86400 ]]; then 
     days=$((medium_time / 60 / 60 / 24))
 else
