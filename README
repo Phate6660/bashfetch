@@ -1,10 +1,12 @@
 This is a pure-bash informmation fetching script.
 
 Currently, the output is as follows on my machine:
+$ ./bashfetch pacman
 CPU:      AMD Ryzen 5 3550H with Radeon Vega Mobile Gfx [4 cores, 8 threads]
 DISTRO:   EndeavourOS
 HOSTNAME: TUF-Gaming
 KERNEL:   6.4.7-arch1-3
+PACKAGES: 1722 (explicit) 2183 (total) | pacman
 UPTIME:   0d 20h 4m
 
 TODO:
@@ -19,7 +21,7 @@ TODO:
   + apt/dpkg/pkg (ubuntu/debian-based, termux)
   + dnf/zypper/rpm (fedora/openSUSE-based)
   + flatpak (standalone)
-  + pacman (arch-based)
+  + [DONE?] pacman (arch-based)
   + portage (gentoo)
   + snap (standalone)
   + xbps (void)

@@ -51,6 +51,42 @@ fi
 # Kernel
 LINUX="$(< /proc/sys/kernel/osrelease)"
 
+# Packages
+count_pacman() {
+    total=0
+    explicit=0
+    for package in /var/lib/pacman/local/*; do
+        # 'ALPM_DB_VERSION' isn't a package.
+        if [[ "${package}" =~ .*ALPM_DB_VERSION.* ]]; then
+            continue
+        fi
+        total=$((total + 1))
+        description="$(< "${package}"/desc)"
+        IFS=$'\n'
+        for line in ${description}; do
+            if [ "${line}" == "%REASON%" ]; then
+                found_reason=true
+                continue
+            fi
+            if ${found_reason}; then
+                # If the reason on the next line is equal to '1',
+                # that means the package was explicitly installed.
+                if [ "${line}" == 1 ]; then
+                    explicit=$((explicit + 1))
+                    unset found_reason
+                fi
+            fi
+        done
+        unset IFS
+    done
+	PACKAGES="${explicit} (explicit) ${total} (total) | pacman"
+}
+
+case "${1}" in
+    "pacman") count_pacman;;
+    *) printf "Sorry, '%s' isn't supported yet...\n" "${1}" && exit 1;;
+esac
+
 # Uptime
 uptime_file="$(< /proc/uptime)"
 IFS=" " read -ra rare_time        <<< "${uptime_file}"
@@ -84,6 +120,7 @@ UPTIME="${days}d ${hours}h ${minutes}m"
 # DISTRO:   EndeavourOS
 # HOSTNAME: TUF-Gaming
 # KERNEL:   6.4.7-arch1-3
+# PACKAGES: 1722 (explicit) 2183 total) | pacman
 # UPTIME:   0d 20h 4m
 #
 # The line 3 below this one disables a couple of false warnings about quoting.
@@ -95,5 +132,9 @@ CPU:      %s [%d cores, %d threads]
 DISTRO:   %s
 HOSTNAME: %s
 KERNEL:   %s
+PACKAGES: %s
 UPTIME:   %s
-""" "${CPU}" "${CORES}" "${THREADS}" "${DISTRO}" "${HOSTNAME}" "${LINUX}" "${UPTIME}"
+""" \
+		"${CPU}" "${CORES}" "${THREADS}"\
+		"${DISTRO}" "${HOSTNAME}" "${LINUX}"\
+		"${PACKAGES}" "${UPTIME}"
