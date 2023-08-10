@@ -74,6 +74,12 @@ count_pacman() {
                 if [ "${line}" == 1 ]; then
                     explicit=$((explicit + 1))
                     unset found_reason
+                    # Stop iterating through file once the reason is found.
+                    # Seems insignficant at first, but the reason is usually
+                    # halfway through the file. So when you have thousands packages,
+                    # you're saving on reading though around half a file for each package,
+                    # saving lots of time and resources in the long run.
+                    break
                 fi
             fi
         done
@@ -82,10 +88,14 @@ count_pacman() {
 	PACKAGES="${explicit} (explicit) ${total} (total) | pacman"
 }
 
-case "${1}" in
-    "pacman") count_pacman;;
-    *) printf "Sorry, '%s' isn't supported yet...\n" "${1}" && exit 1;;
-esac
+if [ -n "${1}" ]; then
+    case "${1}" in
+        "pacman") count_pacman;;
+		*) PACKAGES="N/A ('${1}' isn't a supported package manager yet)";;
+    esac
+else
+    PACKAGES="N/A (no package manager specified)"
+fi
 
 # Uptime
 uptime_file="$(< /proc/uptime)"
@@ -93,7 +103,7 @@ IFS=" " read -ra rare_time        <<< "${uptime_file}"
 IFS="." read -ra medium_rare_time <<< "${rare_time[0]}"
 medium_time="${medium_rare_time[0]}"
 # TODO: Find a better way to compact this section.
-if [[ "${medium_time}" -gt 86400 ]]; then 
+if [[ "${medium_time}" -gt 86397 ]]; then 
     days=$((medium_time / 60 / 60 / 24))
 else
     days=0
